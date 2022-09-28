@@ -18,6 +18,7 @@ public class Nodo extends Thread {
     }
 
     public void mezcla(List<Integer> l1, List<Integer> l2) {
+        lista.clear();
         int i = 0, j = 0;
         while (i < l1.size() && j < l2.size()) {
             int a = l1.get(i), b = l2.get(j);
@@ -39,8 +40,8 @@ public class Nodo extends Thread {
 
     @Override
     public void run() {
-        if (lista.size() > 1) {
-            int size = lista.size();
+        int size = lista.size();
+        if (size > 1) {
             int mid = size / 2;
 
             List<Integer> l1 = new ArrayList<>(1);

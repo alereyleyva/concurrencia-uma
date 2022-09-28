@@ -22,17 +22,19 @@ public class Fibonacci extends Thread {
         else if (n == 1) {
             value = 1;
             previousValue = 0;
+        } else {
+            Fibonacci fibonacci = new Fibonacci(n - 1);
+
+            fibonacci.start();
+
+            try {
+                fibonacci.join();
+            } catch (InterruptedException e) {
+                System.err.println(e.getMessage());
+            }
+
+            value = fibonacci.getValue() + fibonacci.getPreviousValue();
+            previousValue = fibonacci.getValue();
         }
-
-        Fibonacci fibonacci = new Fibonacci(n - 1);
-
-        fibonacci.start();
-
-        try {
-            fibonacci.join();
-        } catch (InterruptedException e) {
-            System.err.println(e.getMessage());
-        }
-
     }
 }

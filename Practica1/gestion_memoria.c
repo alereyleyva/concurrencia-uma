@@ -10,26 +10,7 @@ Recibe una lista y compacta elementos que son consecutivos, devolviendo la lista
 */
 void compactar(T_Manejador *manejador_ptr)
 {
-    T_Manejador manejador = *manejador_ptr;
-    T_Manejador anterior = NULL;
-    T_Manejador actual = manejador;
-    T_Manejador siguiente = NULL;
-
-    while (actual != NULL)
-    {
-        siguiente = actual->sig;
-        while (siguiente != NULL && siguiente->inicio == actual->fin + 1)
-        {
-            actual->fin = siguiente->fin;
-            actual->sig = siguiente->sig;
-            free(siguiente);
-            siguiente = actual->sig;
-        }
-        anterior = actual;
-        actual = siguiente;
-    }
-
-    *manejador_ptr = manejador;
+    ;
 }
 
 /* Crea la estructura utilizada para gestionar la memoria disponible. Inicialmente, s�lo un nodo desde 0 a MAX
@@ -48,9 +29,9 @@ En el main se define la lista como T_Manejador manej; (un puntero a una structur
 void crear(T_Manejador *manejador)
 {
     *manejador = malloc(sizeof(struct T_Nodo));
+    (*manejador)->sig = NULL;
     (*manejador)->inicio = 0;
     (*manejador)->fin = MAX - 1;
-    (*manejador)->sig = NULL;
 }
 
 /* Destruye la estructura utilizada (libera todos los nodos de la lista. El par�metro manejador debe terminar apuntando a NULL
@@ -61,7 +42,7 @@ Consejo: Para saber si te estas dejando memoria por ahí, en el main crea un buc
 void destruir(T_Manejador *manejador)
 {
     T_Manejador aux;
-    while ((*manejador) != NULL)
+    while (*manejador != NULL)
     {
         aux = *manejador;
         *manejador = (*manejador)->sig;
@@ -74,29 +55,43 @@ Si la operación se pudo llevar a cabo, es decir, existe un trozo con capacidad 
  */
 void obtener(T_Manejador *manejador, unsigned tam, unsigned *dir, unsigned *ok)
 {
-    T_Manejador aux = *manejador;
-    while (aux != NULL)
+    if (*manejador == NULL)
     {
-        if (aux->fin - aux->inicio >= tam)
-        {
-            *dir = aux->inicio;
-            aux->inicio += tam;
-            *ok = 1;
-            return;
-        }
-        aux = aux->sig;
+        *ok = 0;
     }
-    *ok = 0;
+    else
+    {
+
+        unsigned tamNodo = (*manejador)->fin - (*manejador)->inicio + 1;
+        if (tamNodo == tam)
+        {
+            *dir = (*manejador)->inicio;
+            T_Manejador aux = *manejador;
+            *manejador = (*manejador)->sig;
+            free(aux);
+            *ok = 1;
+        }
+        else if (tamNodo > tam)
+        {
+            *dir = (*manejador)->inicio;
+            (*manejador)->inicio = (*manejador)->inicio + tam;
+            *ok = 1;
+        }
+        else
+        {
+            T_Manejador *aux2 = ;
+            obtener(&(*manejador)->sig, tam, dir, ok);
+        }
+    }
 }
 
 /* Muestra el estado actual de la memoria, bloques de memoria libre */
 void mostrar(T_Manejador manejador)
 {
-    T_Manejador aux = manejador;
-    while (aux != NULL)
+    while (manejador != NULL)
     {
-        printf("%d-%d\n", aux->inicio, aux->fin);
-        aux = aux->sig;
+        printf("Inicio: %u, Fin: %u -> Tam: %u \n", manejador->inicio, manejador->fin, manejador->fin - manejador->inicio + 1);
+        manejador = manejador->sig;
     }
 }
 
@@ -106,14 +101,29 @@ void mostrar(T_Manejador manejador)
  */
 void devolver(T_Manejador *manejador, unsigned tam, unsigned dir)
 {
-    T_Manejador aux = *manejador;
-    while (aux != NULL)
+    // 0 - 300 && 500 - 599 && 700 - 999 dir = 650 + (tam - 1)
+    T_Manejador nodo = malloc(sizeof(struct T_Nodo));
+    nodo->inicio = dir;
+    nodo->fin = dir + tam - 1;
+    T_Manejador aux;
+    if (*manejador == NULL)
     {
-        if (aux->inicio == dir)
+        nodo->sig = NULL;
+        *manejador = nodo;
+    }
+    else if (dir < (*manejador)->inicio)
+    {
+        nodo->sig = *manejador;
+        *manejador = nodo;
+    }
+    else
+    {
+        aux = *manejador;
+        while ((aux->sig) != NULL && (dir > (aux->sig)->inicio))
         {
-            aux->inicio -= tam;
-            return;
+            aux = aux->sig;
         }
-        aux = aux->sig;
+        nodo->sig = aux->sig;
+        aux->sig = nodo;
     }
 }

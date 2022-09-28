@@ -1,1 +1,7 @@
 .vscode/
+.idea/
+**/.idea/
+**/.vscode/
+**/*.exe
+**/out
+**/*.out
